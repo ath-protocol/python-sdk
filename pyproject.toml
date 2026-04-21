@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ath-sdk"
+version = "0.1.0"
+description = "Python SDK for the Agent Trust Handshake (ATH) protocol"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "ATH Protocol Contributors" }]
+keywords = ["ath", "oauth", "agents", "authorization", "trust", "handshake"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.7",
+    "joserfc>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "cryptography>=42.0",
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/ath-protocol/python-sdk"
+Repository = "https://github.com/ath-protocol/python-sdk"
+Specification = "https://github.com/ath-protocol/agent-trust-handshake-protocol"
+"TypeScript SDK" = "https://github.com/ath-protocol/typescript-sdk"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ath"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/ath", "schema", "README.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
