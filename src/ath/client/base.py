@@ -188,13 +188,15 @@ class ATHClientBase:
     def exchange_token(self, code: str, session_id: str) -> TokenResponse:
         """POST /ath/token — Token Exchange (spec §6.3)."""
         cid, sec = require_credentials(self._client_id, self._client_secret)
+        token_url = self._ath_url("/ath/token")
         body = build_token_body(
             client_id=cid,
             client_secret=sec,
+            agent_attestation=self._attest(token_url),
             authorization_code=code,
             session_id=session_id,
         )
-        raw = self._request("POST", self._ath_url("/ath/token"), body)
+        raw = self._request("POST", token_url, body)
         parsed = TokenResponse.model_validate(raw)
         self._access_token = parsed.access_token
         return parsed
@@ -205,11 +207,13 @@ class ATHClientBase:
         """POST /ath/revoke — Token Revocation (spec §6.5)."""
         if not self._access_token or not self._client_id:
             return
-        self._request(
-            "POST",
-            self._ath_url("/ath/revoke"),
-            {"client_id": self._client_id, "token": self._access_token},
-        )
+        body: dict[str, Any] = {
+            "client_id": self._client_id,
+            "token": self._access_token,
+        }
+        if self._client_secret is not None:
+            body["client_secret"] = self._client_secret
+        self._request("POST", self._ath_url("/ath/revoke"), body)
         self._access_token = None
 
     # -- credential management -----------------------------------------------

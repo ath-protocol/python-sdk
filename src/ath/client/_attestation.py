@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 import time
 from typing import Any
 
@@ -30,6 +31,8 @@ def sign_attestation(
         "aud": audience,
         "iat": now,
         "exp": now + 3600,
+        # Unique per attestation; gateways MUST reject replayed jti (protocol §6.1).
+        "jti": secrets.token_urlsafe(24),
     }
     key = ECKey.import_key(private_key)
     return jwt.encode(header, claims, key)

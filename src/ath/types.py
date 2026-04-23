@@ -171,8 +171,8 @@ class AuthorizationRequest(BaseModel):
     agent_attestation: str
     provider_id: str
     scopes: list[str]
+    state: str
     user_redirect_uri: str | None = None
-    state: str | None = None
     resource: str | None = None  # RFC 8707
 
 
@@ -202,6 +202,7 @@ class TokenExchangeRequest(BaseModel):
     grant_type: Literal["authorization_code"] = "authorization_code"
     client_id: str
     client_secret: str
+    agent_attestation: str
     code: str
     ath_session_id: str
 
@@ -224,10 +225,11 @@ class TokenResponse(BaseModel):
 
 
 class TokenRevocationRequest(BaseModel):
-    """POST /ath/revoke — request body."""
+    """POST /ath/revoke — request body (RFC 7009; agent callers include client auth)."""
 
-    client_id: str
     token: str
+    client_id: str | None = None
+    client_secret: str | None = None
 
 
 # ---------------------------------------------------------------------------

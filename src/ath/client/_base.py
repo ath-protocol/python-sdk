@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-import uuid
+import secrets
 from typing import Any
 
 from ath.exceptions import ATHError
@@ -65,6 +65,7 @@ def build_register_body(
     redirect_uris: list[str] | None,
     base_url: str,
 ) -> dict[str, Any]:
+    """Build POST /ath/agents/register JSON (mirrors @ath-protocol/client)."""
     return {
         "agent_id": agent_id,
         "agent_attestation": attestation,
@@ -85,13 +86,19 @@ def build_authorize_body(
     resource: str | None,
     base_url: str,
 ) -> dict[str, Any]:
+    """Build POST /ath/authorize JSON.
+
+    ``state`` uses at least 128 bits of entropy (protocol requirement).
+    Default ``user_redirect_uri`` matches @ath-protocol/client.
+    """
     body: dict[str, Any] = {
         "client_id": client_id,
         "agent_attestation": attestation,
         "provider_id": provider,
         "scopes": scopes,
         "user_redirect_uri": redirect_uri or f"{base_url}/ath/callback",
-        "state": str(uuid.uuid4()),
+        # 128 bits of entropy, hex-encoded (matches @ath-protocol/client on b77d branch)
+        "state": secrets.token_hex(16),
     }
     if resource is not None:
         body["resource"] = resource
@@ -102,13 +109,16 @@ def build_token_body(
     *,
     client_id: str,
     client_secret: str,
+    agent_attestation: str,
     authorization_code: str,
     session_id: str,
 ) -> dict[str, Any]:
+    """Build POST /ath/token JSON (includes ``agent_attestation`` per protocol)."""
     return {
         "grant_type": "authorization_code",
         "client_id": client_id,
         "client_secret": client_secret,
+        "agent_attestation": agent_attestation,
         "code": authorization_code,
         "ath_session_id": session_id,
     }
