@@ -10,3 +10,4 @@ build/
 *.so
 .env
 .venv/
+.e2e_stack.pid

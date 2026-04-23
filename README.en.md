@@ -107,6 +107,17 @@ Wrap `register` / `authorize` / `exchange_token` / `proxy` inside a Tool your ag
 - [LangChain integration](https://athprotocol.dev/docs/integrations/langchain)
 - [Examples in this repository](https://github.com/ath-protocol/python-sdk/tree/main/examples)
 
+### End-to-end tests
+
+`tests/test_e2e.py` exercises the Python client over **real HTTP** against a gateway and upstream started by `scripts/e2e_gateway_stack.mjs` (built `@ath-protocol/server`). **Only the OAuth2 IdP is a minimal mock** (auto-approve for automation).
+
+```bash
+# Requires ath-protocol/typescript-sdk checked out at ./typescript-sdk
+make e2e
+```
+
+Or run `OAUTH_PORT=18100 GATEWAY_PORT=18101 UPSTREAM_PORT=18102 node scripts/e2e_gateway_stack.mjs` after `pnpm -C typescript-sdk install && pnpm -C typescript-sdk run build`, then `ATH_GATEWAY_URL=http://127.0.0.1:18101 python3 -m pytest tests/test_e2e.py -v`. Set `ATH_E2E_AUTO_STACK=1` to attempt auto build + start (see `tests/conftest.py`).
+
 ## Architecture
 
 ```

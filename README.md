@@ -136,6 +136,17 @@ response = agent.run("查询用户ID为123的基本信息")
 - [LangChain 集成教程](https://athprotocol.dev/docs/integrations/langchain)
 - [示例项目](https://github.com/ath-protocol/python-sdk/tree/main/examples)（含 `examples/README.md`）
 
+### 端到端测试（E2E）
+
+`tests/test_e2e.py` 在**真实 HTTP** 下跑完整网关流程；**仅 OAuth2 IdP 为最小 mock**（`auto_approve=true`），网关与上游 API 由 `scripts/e2e_gateway_stack.mjs` 启动，底层为 `typescript-sdk` 里已构建的 `@ath-protocol/server`。
+
+```bash
+# 需已克隆 ath-protocol/typescript-sdk 到本仓库旁的 typescript-sdk/ 目录
+make e2e
+```
+
+或手动：先 `pnpm -C typescript-sdk install && pnpm -C typescript-sdk run build`，再 `OAUTH_PORT=18100 GATEWAY_PORT=18101 UPSTREAM_PORT=18102 node scripts/e2e_gateway_stack.mjs`，然后 `ATH_GATEWAY_URL=http://127.0.0.1:18101 python3 -m pytest tests/test_e2e.py -v`。设置 `ATH_E2E_AUTO_STACK=1` 可在 pytest 会话开始时尝试自动构建并拉起栈（见 `tests/conftest.py`）。
+
 ## 🤝 与其他组件的关系
 
 ```
