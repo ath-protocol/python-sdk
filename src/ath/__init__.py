@@ -1,7 +1,7 @@
 """ath-sdk — Python SDK for the Agent Trust Handshake (ATH) protocol.
 
-Mirrors the official TypeScript SDK at @ath-protocol/client + @ath-protocol/types.
-Type names match the upstream JSON Schema $defs.
+Mirrors the public API of @ath-protocol/client; request/response shapes follow
+``schema/ath-protocol.schema.json`` (vendored from ath-protocol/agent-trust-handshake-protocol).
 """
 
 from ath.client.async_base import AsyncATHClientBase

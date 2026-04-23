@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ath-sdk"
 version = "0.1.0"
-description = "Python SDK for the Agent Trust Handshake (ATH) protocol"
+description = "Python SDK for the Agent Trust Handshake (ATH) protocol — aligned with the official JSON Schema and @ath-protocol/client"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -45,7 +45,7 @@ Specification = "https://github.com/ath-protocol/agent-trust-handshake-protocol"
 packages = ["src/ath"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/ath", "schema", "README.md", "LICENSE"]
+include = ["src/ath", "schema", "README.md", "LICENSE", "examples"]
 
 [tool.ruff]
 line-length = 100
