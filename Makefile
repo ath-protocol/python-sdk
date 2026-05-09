@@ -1,4 +1,4 @@
-.PHONY: install check test gen-all e2e
+.PHONY: install check test gen-all e2e build clean publish
 
 install:
 	pip install -e ".[dev]"
@@ -20,3 +20,15 @@ e2e:
 
 gen-all:
 	python3 scripts/gen_schema.py
+
+clean:
+	rm -rf dist/ build/ src/*.egg-info
+
+build: clean
+	python3 -m build
+
+publish: build
+	python3 -m twine upload dist/*
+
+publish-test: build
+	python3 -m twine upload --repository testpypi dist/*
