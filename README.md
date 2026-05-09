@@ -96,19 +96,20 @@ client.revoke()
 
 只需几行代码，就能让你的LangChain Agent获得可信交互能力：
 
-> 说明：若你直接使用本仓库的 `ath` 包，请在 Tool 内自行持有 `ATHGatewayClient` 并调用其 `register` / `authorize` / `exchange_token` / `proxy`；下面保留原有示例结构，便于与官方集成教程对照。
-
 ```python
 from langchain.agents import initialize_agent, AgentType
 from langchain.chat_models import ChatOpenAI
-from ath_sdk.langchain import ATHTool
+from ath.langchain import ATHTool
+
+# client = ATHGatewayClient(...)  # 已完成 register / authorize / exchange_token
+
 # 包装一个需要ATH认证的服务
 ath_tool = ATHTool(
     name="用户数据查询",
     description="查询用户的基本信息",
     client=client,
-    service_id="user-service",
-    endpoint="https://api.example.com/user/info"
+    provider_id="user-service",
+    endpoint="/user/info",
 )
 # 初始化Agent
 llm = ChatOpenAI(temperature=0)
@@ -116,11 +117,13 @@ agent = initialize_agent(
     [ath_tool],
     llm,
     agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True
+    verbose=True,
 )
 # Agent会自动完成握手、授权、访问的全部流程
 response = agent.run("查询用户ID为123的基本信息")
 ```
+
+> 安装 LangChain 集成所需依赖：`pip install ath-sdk[langchain]`
 
 ## 🎯 适用场景
 
