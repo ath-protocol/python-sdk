@@ -97,7 +97,9 @@ def _complete_oauth_via_mock_idp(authorization_url: str) -> None:
         assert loc1, "IdP redirect missing Location"
 
         r2 = http.get(loc1)
-        assert r2.status_code == 302, f"Callback chain expected 302, got {r2.status_code}: {r2.text}"
+        assert r2.status_code == 302, (
+            f"Callback chain expected 302, got {r2.status_code}: {r2.text}"
+        )
         loc2 = r2.headers.get("location")
         assert loc2, "Callback redirect missing Location"
 
