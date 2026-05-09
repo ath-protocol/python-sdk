@@ -69,4 +69,14 @@ __all__ = [
     "TokenResponse",
     "TokenRevocationRequest",
     "ATHErrorResponse",
+    # LangChain integration (requires `langchain-core`)
+    "ATHTool",
 ]
+
+
+def __getattr__(name: str):
+    if name == "ATHTool":
+        from ath.langchain import ATHTool
+
+        return ATHTool
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

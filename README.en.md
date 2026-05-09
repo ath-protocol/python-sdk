@@ -97,9 +97,33 @@ Current client behavior aligns with `@ath-protocol/client` and the bundled schem
 - **`exchange_token`**: sends a fresh **`agent_attestation`** with **`aud`** set to the **token endpoint URL** (`{base}/ath/token`).
 - **`revoke`**: when acting as the registered agent, sends **`client_id`**, **`client_secret`**, and **`token`**.
 
-## LangChain-style integration
+## LangChain integration
 
-Wrap `register` / `authorize` / `exchange_token` / `proxy` inside a Tool your agent can call. See the Chinese [README.md](README.md) for a short structural example and [examples/](examples/) for a runnable demo.
+Install with the optional `langchain` extra:
+
+```bash
+pip install ath-sdk[langchain]
+```
+
+Then use `ATHTool` to expose an ATH-authenticated endpoint as a LangChain tool:
+
+```python
+from ath import ATHGatewayClient
+from ath.langchain import ATHTool
+
+client = ATHGatewayClient(url, agent_id, private_key)
+# ... register, authorize, exchange_token ...
+
+tool = ATHTool(
+    name="user-profile",
+    description="Look up a user profile by ID",
+    client=client,
+    provider_id="github",
+    endpoint="/user",
+)
+```
+
+Pass `tool` (or a list of tools) to any LangChain agent. See the Chinese [README.md](README.md) for a full agent example and [examples/](examples/) for a runnable demo.
 
 ## Documentation
 
