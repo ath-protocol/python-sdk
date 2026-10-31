@@ -110,3 +110,17 @@ async def test_async_authorize_before_register(async_client: AsyncATHGatewayClie
     with pytest.raises(ATHError) as exc_info:
         await async_client.authorize("p", ["s"])
     assert exc_info.value.code == "NOT_REGISTERED"
+
+
+@pytest.mark.asyncio
+async def test_async_user_token_header(ec_private_pem: str) -> None:
+    seen: list[str | None] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers.get("X-ATH-User-Token"))
+        return _mock_handler(request)
+
+    c = AsyncATHGatewayClient(GATEWAY, AGENT_ID, ec_private_pem, user_token="sess_456")
+    c._http = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    await c.discover()
+    assert seen == ["sess_456"]

@@ -179,3 +179,34 @@ class TestErrorHandling:
             client._request("GET", client._ath_url("/nonexistent"))
         assert exc_info.value.code == "NOT_FOUND"
         assert exc_info.value.status == 404
+
+
+def test_user_token_sent_on_every_request(ec_private_pem: str) -> None:
+    """Gateways that authenticate their users read the session from X-ATH-User-Token."""
+    seen: list[str | None] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers.get("X-ATH-User-Token"))
+        return _mock_handler(request)
+
+    c = ATHGatewayClient(GATEWAY, AGENT_ID, ec_private_pem, user_token="sess_123")
+    c._http = httpx.Client(transport=httpx.MockTransport(handler))
+    c.discover()
+    c.register(
+        developer={"name": "d", "id": "d"},
+        providers=[{"provider_id": "github", "scopes": ["repo"]}],
+        purpose="p",
+    )
+    assert seen == ["sess_123", "sess_123"]
+
+
+def test_no_user_token_header_by_default(client: ATHGatewayClient) -> None:
+    seen: list[str | None] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers.get("X-ATH-User-Token"))
+        return _mock_handler(request)
+
+    client._http = httpx.Client(transport=httpx.MockTransport(handler))
+    client.discover()
+    assert seen == [None]

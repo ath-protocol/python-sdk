@@ -56,6 +56,7 @@ client = ATHGatewayClient(
     "https://your-agent.example.com/.well-known/agent.json",  # 代理 canonical agent_id（URI）
     open("agent-ec-private.pem").read(),  # PEM 格式的 EC P-256 私钥
     key_id="default",  # 可选，对应 JWT header 的 kid
+    user_token=None,  # 可选，网关用户会话令牌；参考网关要求以 X-ATH-User-Token 请求头携带
 )
 ```
 
