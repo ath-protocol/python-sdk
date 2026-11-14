@@ -66,9 +66,13 @@ class ATHClientBase:
         *,
         key_id: str = "default",
         timeout: float = 60.0,
+        user_token: str | None = None,
     ) -> None:
         self.url = url.rstrip("/")
         self.agent_id = agent_id
+        # Session token of the gateway user the agent acts for. Gateways that authenticate their own
+        # users (e.g. the reference gateway's requireAuth) read it from X-ATH-User-Token.
+        self._user_token = user_token
         self._private_key = private_key
         self._key_id = key_id
         self._http: httpx.Client = httpx.Client(timeout=timeout)
@@ -106,6 +110,8 @@ class ATHClientBase:
     ) -> dict[str, Any]:
         """HTTP request with JSON body → parsed JSON dict. Raises ATHError on failure."""
         h: dict[str, str] = {}
+        if self._user_token:
+            h["X-ATH-User-Token"] = self._user_token
         if headers:
             h.update(headers)
         r = self._http.request(method, full_url, headers=h, json=body)
@@ -122,6 +128,8 @@ class ATHClientBase:
     ) -> httpx.Response:
         """HTTP request → raw response. Raises ATHError on failure."""
         h: dict[str, str] = {}
+        if self._user_token:
+            h["X-ATH-User-Token"] = self._user_token
         if headers:
             h.update(headers)
         r = self._http.request(method, full_url, headers=h, json=body)
